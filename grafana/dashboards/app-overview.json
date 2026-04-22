@@ -1,0 +1,300 @@
+{
+  "id": null,
+  "uid": "nestjs-app-overview",
+  "title": "App Overview",
+  "tags": ["nestjs", "node", "container", "redis", "mysql"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 2,
+  "refresh": "5s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+
+    { "id": 100, "title": "— k6 Load Test —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": { "content": "## k6 Load Test", "mode": "markdown" } },
+
+    {
+      "id": 1, "title": "k6 — Virtual Users", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 2 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "purple" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "k6_vus", "legendFormat": "VUs" },
+        { "datasource": "Prometheus", "expr": "k6_vus_max", "legendFormat": "VUs Max" }
+      ]
+    },
+
+    {
+      "id": 2, "title": "k6 — Request Rate (req/s)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 6, "y": 2 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "rate(k6_http_reqs_total[1m])", "legendFormat": "req/s" }
+      ]
+    },
+
+    {
+      "id": 3, "title": "k6 — Latency p95 / p99 (ms)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 12, "y": 2 },
+      "fieldConfig": { "defaults": { "unit": "ms", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.95, sum(rate(k6_http_req_duration_bucket[1m])) by (le))", "legendFormat": "p95" },
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.99, sum(rate(k6_http_req_duration_bucket[1m])) by (le))", "legendFormat": "p99" }
+      ]
+    },
+
+    {
+      "id": 4, "title": "k6 — Error Rate", "type": "gauge",
+      "gridPos": { "h": 7, "w": 6, "x": 18, "y": 2 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "min": 0, "max": 1,
+          "thresholds": { "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 0.01 },
+            { "color": "red", "value": 0.05 }
+          ]}
+        }
+      },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "k6_http_req_failed", "legendFormat": "Error Rate" }
+      ]
+    },
+
+    { "id": 101, "title": "— NestJS HTTP —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 9 },
+      "options": { "content": "## NestJS HTTP", "mode": "markdown" } },
+
+    {
+      "id": 5, "title": "HTTP Request Rate by Status", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 11 },
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(http_requests_total[1m])) by (status_code)", "legendFormat": "{{status_code}}" }
+      ]
+    },
+
+    {
+      "id": 6, "title": "HTTP Latency p95 / p99 (s)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 11 },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le, route))", "legendFormat": "p95 {{route}}" },
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le, route))", "legendFormat": "p99 {{route}}" }
+      ]
+    },
+
+    {
+      "id": 7, "title": "In-flight Requests", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 11 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "blue" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "http_requests_in_flight", "legendFormat": "In-flight" }
+      ]
+    },
+
+    { "id": 102, "title": "— Node.js Internals —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 18 },
+      "options": { "content": "## Node.js Internals", "mode": "markdown" } },
+
+    {
+      "id": 8, "title": "CPU Usage", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 20 },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "rate(process_cpu_seconds_total[1m])", "legendFormat": "CPU" }
+      ]
+    },
+
+    {
+      "id": 9, "title": "Heap Used / Total (bytes)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 6, "y": 20 },
+      "fieldConfig": { "defaults": { "unit": "bytes", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "nodejs_heap_size_used_bytes", "legendFormat": "Heap Used" },
+        { "datasource": "Prometheus", "expr": "nodejs_heap_size_total_bytes", "legendFormat": "Heap Total" }
+      ]
+    },
+
+    {
+      "id": 10, "title": "RSS Memory (bytes)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 12, "y": 20 },
+      "fieldConfig": { "defaults": { "unit": "bytes", "color": { "mode": "fixed", "fixedColor": "orange" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "process_resident_memory_bytes", "legendFormat": "RSS" }
+      ]
+    },
+
+    {
+      "id": 11, "title": "Event Loop Lag (s)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 6, "x": 18, "y": 20 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s", "color": { "mode": "palette-classic" },
+          "thresholds": { "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 0.1 },
+            { "color": "red", "value": 0.5 }
+          ]}
+        }
+      },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "nodejs_eventloop_lag_seconds", "legendFormat": "Event Loop Lag" },
+        { "datasource": "Prometheus", "expr": "nodejs_eventloop_lag_p99_seconds", "legendFormat": "Event Loop p99" }
+      ]
+    },
+
+    { "id": 103, "title": "— Container Memory (1 GB limit) —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 27 },
+      "options": { "content": "## Container Memory — 1 GB Limit", "mode": "markdown" } },
+
+    {
+      "id": 12, "title": "Memory Usage vs Limit", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 10, "x": 0, "y": 29 },
+      "fieldConfig": { "defaults": { "unit": "bytes", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "container_memory_usage_bytes{container_label_com_docker_compose_service=\"backend\",image!=\"\"}", "legendFormat": "Usage" },
+        { "datasource": "Prometheus", "expr": "container_spec_memory_limit_bytes{container_label_com_docker_compose_service=\"backend\",image!=\"\"}", "legendFormat": "Limit" }
+      ]
+    },
+
+    {
+      "id": 13, "title": "Memory % Used", "type": "gauge",
+      "gridPos": { "h": 7, "w": 4, "x": 10, "y": 29 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "thresholds": { "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 60 },
+            { "color": "orange", "value": 80 },
+            { "color": "red", "value": 90 }
+          ]}
+        }
+      },
+      "targets": [
+        { "datasource": "Prometheus",
+          "expr": "100 * container_memory_usage_bytes{container_label_com_docker_compose_service=\"backend\",image!=\"\"} / container_spec_memory_limit_bytes{container_label_com_docker_compose_service=\"backend\",image!\"\"}",
+          "legendFormat": "Memory %" }
+      ]
+    },
+
+    {
+      "id": 14, "title": "Container CPU Usage", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 5, "x": 14, "y": 29 },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service=\"backend\",image!=\"\"}[1m])", "legendFormat": "CPU" }
+      ]
+    },
+
+    {
+      "id": 15, "title": "GC Pause Duration p99 (s)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 5, "x": 19, "y": 29 },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.99, sum(rate(nodejs_gc_duration_seconds_bucket[1m])) by (le, kind))", "legendFormat": "GC p99 {{kind}}" }
+      ]
+    },
+
+    { "id": 104, "title": "— Redis —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 36 },
+      "options": { "content": "## Redis Operation Latency", "mode": "markdown" } },
+
+    {
+      "id": 16, "title": "Redis Op Latency p99 (s)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 38 },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.99, sum(rate(redis_operation_duration_seconds_bucket[1m])) by (le, operation))", "legendFormat": "p99 {{operation}}" },
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.95, sum(rate(redis_operation_duration_seconds_bucket[1m])) by (le, operation))", "legendFormat": "p95 {{operation}}" }
+      ]
+    },
+
+    {
+      "id": 17, "title": "Redis Ops/s", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 38 },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(redis_operation_duration_seconds_count[1m])) by (operation)", "legendFormat": "{{operation}}" }
+      ]
+    },
+
+    { "id": 105, "title": "— MySQL —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 45 },
+      "options": { "content": "## MySQL Operation Latency", "mode": "markdown" } },
+
+    {
+      "id": 18, "title": "MySQL Op Latency p99 (s)", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 47 },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.99, sum(rate(mysql_operation_duration_seconds_bucket[1m])) by (le, operation))", "legendFormat": "p99 {{operation}}" },
+        { "datasource": "Prometheus", "expr": "histogram_quantile(0.95, sum(rate(mysql_operation_duration_seconds_bucket[1m])) by (le, operation))", "legendFormat": "p95 {{operation}}" }
+      ]
+    },
+
+    {
+      "id": 19, "title": "MySQL Ops/s", "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 47 },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(mysql_operation_duration_seconds_count[1m])) by (operation)", "legendFormat": "{{operation}}" }
+      ]
+    },
+
+    { "id": 106, "title": "— Summary —", "type": "text", "gridPos": { "h": 2, "w": 24, "x": 0, "y": 54 },
+      "options": { "content": "## Summary", "mode": "markdown" } },
+
+    {
+      "id": 20, "title": "Total Requests Served", "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 56 },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(http_requests_total)", "legendFormat": "Total" }
+      ]
+    },
+
+    {
+      "id": 21, "title": "Process Uptime", "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 56 },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "process_uptime_seconds", "legendFormat": "Uptime" }
+      ]
+    },
+
+    {
+      "id": 22, "title": "k6 Checks Passed", "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 56 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "min": 0, "max": 1,
+          "thresholds": { "steps": [
+            { "color": "red", "value": null },
+            { "color": "yellow", "value": 0.95 },
+            { "color": "green", "value": 0.99 }
+          ]}
+        }
+      },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(k6_checks_total{result=\"pass\"}[5m])) / sum(rate(k6_checks_total[5m]))", "legendFormat": "Checks Passed" }
+      ]
+    },
+
+    {
+      "id": 23, "title": "HTTP 5xx Error Rate", "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 56 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit", "min": 0, "max": 1,
+          "thresholds": { "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 0.01 },
+            { "color": "red", "value": 0.05 }
+          ]}
+        }
+      },
+      "targets": [
+        { "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total{status_code=~\"5..\"}[1m])) / sum(rate(http_requests_total[1m]))",
+          "legendFormat": "5xx Rate" }
+      ]
+    }
+
+  ]
+}
