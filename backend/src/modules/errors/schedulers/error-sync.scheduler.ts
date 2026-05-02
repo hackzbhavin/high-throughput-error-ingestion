@@ -45,7 +45,7 @@ export class ErrorSyncScheduler
 
     // Step 8: for each key, get count and UPSERT into MySQL
     for (const key of keys) {
-      const count = parseInt((await this.redis.get(key)) ?? '0', 10);
+      const count = parseInt((await this.redis.get(key)) ?? '0' , 10);
       if (!count) continue;
 
       const fingerprint = key.replace(REDIS_KEY_PREFIX + ':', '');

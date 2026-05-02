@@ -6,12 +6,12 @@ scrape_configs:
   # NestJS app — exposes /metrics via @willsoto/nestjs-prometheus
   - job_name: 'nestjs-app'
     static_configs:
-      - targets: ['localhost:9002']
+      - targets: ['backend:9002']
 
   # cAdvisor — container CPU / memory / network
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['cadvisor:8080']
 
   # Prometheus self-monitoring
   - job_name: 'prometheus'
